@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.canteen.mapper.SysPageContentMapper">
+    <select id="listAll" resultType="com.canteen.entity.SysPageContent">
+        SELECT id, page_key, page_title, content, remark, updated_by, updated_at
+        FROM sys_page_content ORDER BY id
+    </select>
+    <select id="findByKey" resultType="com.canteen.entity.SysPageContent">
+        SELECT id, page_key, page_title, content, remark, updated_by, updated_at
+        FROM sys_page_content WHERE page_key = #{key}
+    </select>
+    <insert id="upsert">
+        INSERT INTO sys_page_content(page_key, page_title, content, updated_by, updated_at)
+        VALUES(#{pageKey}, #{pageTitle}, #{content}, #{updatedBy}, NOW())
+        ON DUPLICATE KEY UPDATE page_title = #{pageTitle}, content = #{content},
+            updated_by = #{updatedBy}, updated_at = NOW()
+    </insert>
+</mapper>

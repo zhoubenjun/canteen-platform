@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.canteen.mapper.PriceHistoryMapper">
+    <select id="listAll" resultType="com.canteen.entity.PriceHistory">
+        SELECT * FROM price_history ORDER BY snapshot_date DESC
+    </select>
+    <select id="findById" resultType="com.canteen.entity.PriceHistory">
+        SELECT * FROM price_history WHERE id = #{id}
+    </select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO price_history(version_name, snapshot_date, data_json)
+        VALUES(#{versionName}, #{snapshotDate}, #{dataJson})
+    </insert>
+    <delete id="delete">DELETE FROM price_history WHERE id = #{id}</delete>
+</mapper>

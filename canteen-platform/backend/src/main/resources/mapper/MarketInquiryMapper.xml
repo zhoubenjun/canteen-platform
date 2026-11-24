@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.canteen.mapper.MarketInquiryMapper">
+    <sql id="whereCond">
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND ingredient_name LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="source != null and source != ''">
+                AND source = #{source}
+            </if>
+        </where>
+    </sql>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM market_inquiry
+        <include refid="whereCond"/>
+    </select>
+
+    <select id="page" resultType="com.canteen.entity.MarketInquiry">
+        SELECT * FROM market_inquiry
+        <include refid="whereCond"/>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="findById" resultType="com.canteen.entity.MarketInquiry">
+        SELECT * FROM market_inquiry WHERE id = #{id}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO market_inquiry(ingredient_name, unit, price, source, created_at, updated_at, created_by, updated_by)
+        VALUES(#{ingredientName}, #{unit}, #{price}, #{source}, NOW(), NOW(), #{createdBy}, #{updatedBy})
+    </insert>
+
+    <update id="update">
+        UPDATE market_inquiry
+        SET ingredient_name = #{ingredientName}, unit = #{unit}, price = #{price}, source = #{source},
+            updated_at = NOW(), updated_by = #{updatedBy}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">DELETE FROM market_inquiry WHERE id = #{id}</delete>
+
+    <select id="vegetables" resultType="string">
+        SELECT DISTINCT i.name
+        FROM ingredient i
+        JOIN ingredient_category c ON i.category_id = c.id
+        WHERE c.name LIKE '%蔬菜%'
+        ORDER BY i.name
+    </select>
+
+    <select id="compareLatest" resultType="java.util.HashMap">
+        SELECT t.ingredient_name AS ingredientName, t.unit AS unit,
+               MAX(CASE WHEN t.source = '楚小兔' THEN t.price END) AS priceChu,
+               MAX(CASE WHEN t.source = '泰康永乐' THEN t.price END) AS priceTai,
+               MAX(CASE WHEN t.source = '云仓电商' THEN t.price END) AS priceYun
+        FROM (
+            SELECT m.*
+            FROM market_inquiry m
+            JOIN (
+                SELECT ingredient_name, source, MAX(id) AS mid
+                FROM market_inquiry
+                GROUP BY ingredient_name, source
+            ) x ON m.id = x.mid
+        ) t
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND t.ingredient_name LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+        </where>
+        GROUP BY t.ingredient_name, t.unit
+        ORDER BY t.ingredient_name
+    </select>
+    <select id="vegVsMarket" resultType="java.util.HashMap">
+        SELECT i.id AS ingredientId,
+               i.name AS ingredientName,
+               s.name AS supplierName,
+               i.price AS price,
+               i.price_unit AS priceUnit,
+               i.weight_per_unit AS weightPerUnit,
+               i.updated_at AS updatedAt,
+               m.avgPrice AS avgPrice,
+               m.maxPrice AS maxPrice,
+               m.minPrice AS minPrice,
+               m.quoteCount AS quoteCount
+        FROM ingredient i
+        LEFT JOIN supplier s ON i.supplier_id = s.id
+        LEFT JOIN (
+            SELECT t.ingredient_name AS nm,
+                   AVG(t.price) AS avgPrice,
+                   MAX(t.price) AS maxPrice,
+                   MIN(t.price) AS minPrice,
+                   COUNT(*) AS quoteCount
+            FROM (
+                SELECT m0.*
+                FROM market_inquiry m0
+                JOIN (
+                    SELECT ingredient_name, source, MAX(id) AS mid
+                    FROM market_inquiry
+                    GROUP BY ingredient_name, source
+                ) x ON m0.id = x.mid
+            ) t
+            GROUP BY t.ingredient_name
+        ) m ON m.nm = i.name
+        WHERE i.category_id = 13
+        <if test="keyword != null and keyword != ''">
+            AND i.name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        ORDER BY i.name, i.id
+    </select>
+
+</mapper>

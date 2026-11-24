@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.canteen.mapper.PriceLogMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO price_log(ingredient_id, ingredient_name, category_name, supplier_name,
+        old_price, new_price, change_pct, change_type, created_at)
+        VALUES(#{ingredientId}, #{ingredientName}, #{categoryName}, #{supplierName},
+        #{oldPrice}, #{newPrice}, #{changePct}, #{changeType}, NOW())
+    </insert>
+
+    <select id="query" resultType="com.canteen.entity.PriceLog">
+        SELECT * FROM price_log
+        <where>
+            <if test="ingredientId != null">AND ingredient_id = #{ingredientId}</if>
+            <if test="categoryId != null">AND category_name IN (SELECT name FROM ingredient_category WHERE id=#{categoryId})</if>
+            <if test="supplierId != null">AND supplier_name IN (SELECT name FROM supplier WHERE id=#{supplierId})</if>
+            <if test="changeType != null and changeType != ''">AND change_type = #{changeType}</if>
+            <if test="start != null">AND created_at &gt;= #{start}</if>
+            <if test="end != null">AND created_at &lt;= #{end}</if>
+        </where>
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 单食材价格历史（含快照，按时间聚合） -->
+    <select id="history" resultType="java.util.Map">
+        SELECT ingredient_name AS name, old_price AS oldPrice, new_price AS newPrice,
+               change_pct AS changePct, change_type AS changeType, created_at AS time
+        FROM price_log
+        WHERE ingredient_id = #{ingredientId}
+        ORDER BY created_at ASC
+    </select>
+
+    <select id="stats" resultType="java.util.Map">
+        SELECT
+          SUM(CASE WHEN change_type='修改' AND change_pct &gt; 0 THEN 1 ELSE 0 END) AS upCount,
+          SUM(CASE WHEN change_type='修改' AND change_pct &lt; 0 THEN 1 ELSE 0 END) AS downCount,
+          AVG(CASE WHEN change_type='修改' AND change_pct &gt; 0 THEN change_pct END) AS avgUp
+        FROM price_log
+    </select>
+</mapper>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.canteen.mapper.DishMapper">
+    <resultMap id="dishMap" type="com.canteen.entity.Dish">
+        <id property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="category" column="category"/>
+        <result property="image" column="image"/>
+        <result property="excludeSeasoning" column="exclude_seasoning"/>
+        <result property="seasoningCost" column="seasoning_cost"/>
+        <result property="ingredientCost" column="ingredient_cost"/>
+        <result property="laborFee" column="labor_fee"/>
+        <result property="otherFee" column="other_fee"/>
+        <result property="suggestPrice" column="suggest_price"/>
+        <result property="auditPrice" column="audit_price"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <select id="page" resultMap="dishMap">
+        SELECT * FROM dish
+        <where>
+            <if test="keyword != null and keyword != ''">AND name LIKE CONCAT('%',#{keyword},'%')</if>
+            <if test="category != null and category != ''">AND category = #{category}</if>
+            <if test="ingredientKeyword != null and ingredientKeyword != ''">
+                AND id IN (SELECT DISTINCT dish_id FROM dish_ingredient WHERE ingredient_name LIKE CONCAT('%',#{ingredientKeyword},'%'))
+            </if>
+            <if test="unPriced != null and unPriced">AND (audit_price IS NULL OR audit_price = 0)
+                AND id IN (SELECT DISTINCT dish_id FROM dish_ingredient)</if>
+        </where>
+        ORDER BY code
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM dish
+        <where>
+            <if test="keyword != null and keyword != ''">AND name LIKE CONCAT('%',#{keyword},'%')</if>
+            <if test="category != null and category != ''">AND category = #{category}</if>
+            <if test="ingredientKeyword != null and ingredientKeyword != ''">
+                AND id IN (SELECT DISTINCT dish_id FROM dish_ingredient WHERE ingredient_name LIKE CONCAT('%',#{ingredientKeyword},'%'))
+            </if>
+            <if test="unPriced != null and unPriced">AND (audit_price IS NULL OR audit_price = 0)
+                AND id IN (SELECT DISTINCT dish_id FROM dish_ingredient)</if>
+        </where>
+    </select>
+
+    <select id="listAll" resultMap="dishMap">SELECT * FROM dish ORDER BY code</select>
+
+    <select id="findById" resultMap="dishMap">SELECT * FROM dish WHERE id = #{id}</select>
+    <select id="maxCode" resultType="java.lang.Integer">SELECT COALESCE(MAX(code),0) FROM dish</select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO dish(code, name, category, image, exclude_seasoning, seasoning_cost,
+        ingredient_cost, labor_fee, other_fee, suggest_price, audit_price, created_at)
+        VALUES(#{code}, #{name}, #{category}, #{image}, #{excludeSeasoning}, #{seasoningCost},
+        #{ingredientCost}, #{laborFee}, #{otherFee}, #{suggestPrice}, #{auditPrice}, NOW())
+    </insert>
+
+    <update id="update">
+        UPDATE dish SET name=#{name}, category=#{category}, image=#{image}
+        WHERE id=#{id}
+    </update>
+
+    <update id="updateCost">
+        UPDATE dish SET exclude_seasoning=#{excludeSeasoning}, seasoning_cost=#{seasoningCost},
+        ingredient_cost=#{ingredientCost}, labor_fee=#{laborFee}, other_fee=#{otherFee},
+        suggest_price=#{suggestPrice}, audit_price=#{auditPrice}
+        WHERE id=#{id}
+    </update>
+
+    <update id="updateImage">UPDATE dish SET image=#{image} WHERE id=#{id}</update>
+    <update id="updateAuditPrice">UPDATE dish SET audit_price=#{price} WHERE id=#{id}</update>
+
+    <delete id="delete">DELETE FROM dish WHERE id=#{id}</delete>
+    <delete id="deleteByIds">
+        DELETE FROM dish WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+    <delete id="deleteAll">DELETE FROM dish</delete>
+
+    <insert id="batchInsert">
+        INSERT INTO dish(code, name, category, image, exclude_seasoning, seasoning_cost,
+        ingredient_cost, labor_fee, other_fee, suggest_price, audit_price, created_at) VALUES
+        <foreach collection="list" item="d" separator=",">
+        (#{d.code}, #{d.name}, #{d.category}, #{d.image}, #{d.excludeSeasoning}, #{d.seasoningCost},
+        #{d.ingredientCost}, #{d.laborFee}, #{d.otherFee}, #{d.suggestPrice}, #{d.auditPrice}, NOW())
+        </foreach>
+    </insert>
+
+    <select id="listByRecipe" resultMap="dishMap">
+        SELECT DISTINCT d.* FROM dish d
+        JOIN weekly_recipe wr ON wr.dish_id = d.id
+        WHERE wr.week_key = #{weekKey}
+        <if test="mealType != null and mealType != ''">AND wr.meal_type = #{mealType}</if>
+    </select>
+
+    <select id="countByImage" resultType="long">
+        SELECT COUNT(*) FROM dish WHERE image = #{image}
+    </select>
+</mapper>

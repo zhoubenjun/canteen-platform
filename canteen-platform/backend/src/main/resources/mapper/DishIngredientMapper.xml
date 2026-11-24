@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.canteen.mapper.DishIngredientMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO dish_ingredient(dish_id, ingredient_id, ingredient_name, weight_g)
+        VALUES(#{dishId}, #{ingredientId}, #{ingredientName}, #{weightG})
+    </insert>
+    <insert id="batchInsert">
+        INSERT INTO dish_ingredient(dish_id, ingredient_id, ingredient_name, weight_g) VALUES
+        <foreach collection="list" item="di" separator=",">
+        (#{di.dishId}, #{di.ingredientId}, #{di.ingredientName}, #{di.weightG})
+        </foreach>
+    </insert>
+    <delete id="deleteByDish">DELETE FROM dish_ingredient WHERE dish_id = #{dishId}</delete>
+    <select id="listByDish" resultType="com.canteen.entity.DishIngredient">
+        SELECT * FROM dish_ingredient WHERE dish_id = #{dishId} ORDER BY id
+    </select>
+    <select id="listByDishIds" resultType="com.canteen.entity.DishIngredient">
+        SELECT * FROM dish_ingredient WHERE dish_id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </select>
+</mapper>

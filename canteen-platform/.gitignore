@@ -1,0 +1,44 @@
+# ============ 构建产物（可由源码重新生成，不入库）============
+/backend/target/
+/backend/src/main/resources/static/
+/frontend/dist/
+/frontend/build-log.txt
+
+# ============ 依赖（clone 后 npm install 即可）============
+/frontend/node_modules/
+
+# ============ 运行期数据（上传图片、日志）============
+/backend/uploads/
+*.log
+*.log.*
+
+# ============ 本地工具链与数据库（JDK / MySQL / 数据文件，体积过大且属本机环境）============
+/tools/
+
+# ============ 数据库备份与导出（按需单独保管）============
+*.sql.bak
+*_bak_*
+*.sql.gz
+
+# ============ 压缩包 / 打包文件 ============
+*.zip
+*.7z
+*.rar
+*.jar
+*.war
+
+# ============ IDE / 编辑器 ============
+/.idea/
+*.iml
+/.vscode/
+*.swp
+
+# ============ 操作系统杂项 ============
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ============ 临时文件 ============
+*.tmp
+*.bak
+*.old

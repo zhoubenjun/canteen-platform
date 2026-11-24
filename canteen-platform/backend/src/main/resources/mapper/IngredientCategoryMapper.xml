@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.canteen.mapper.IngredientCategoryMapper">
+    <select id="listAll" resultType="com.canteen.entity.IngredientCategory">
+        SELECT * FROM ingredient_category ORDER BY sort, id
+    </select>
+    <select id="listByName" resultType="com.canteen.entity.IngredientCategory">
+        SELECT * FROM ingredient_category
+        <where>
+            <if test="keyword != null and keyword != ''">name LIKE CONCAT('%', #{keyword}, '%')</if>
+        </where>
+        ORDER BY sort, id
+    </select>
+    <select id="countByName" resultType="long">
+        SELECT COUNT(*) FROM ingredient_category
+        <where>
+            <if test="keyword != null and keyword != ''">name LIKE CONCAT('%', #{keyword}, '%')</if>
+        </where>
+    </select>
+    <select id="pageByName" resultType="com.canteen.entity.IngredientCategory">
+        SELECT * FROM ingredient_category
+        <where>
+            <if test="keyword != null and keyword != ''">name LIKE CONCAT('%', #{keyword}, '%')</if>
+        </where>
+        ORDER BY sort, id LIMIT #{offset}, #{size}
+    </select>
+    <select id="findById" resultType="com.canteen.entity.IngredientCategory">
+        SELECT * FROM ingredient_category WHERE id = #{id}
+    </select>
+    <select id="findByName" resultType="com.canteen.entity.IngredientCategory">
+        SELECT * FROM ingredient_category WHERE name = #{name}
+    </select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO ingredient_category(name, code, status, sort, created_at, updated_at, created_by, updated_by)
+        VALUES(#{name}, #{code}, #{status}, #{sort}, NOW(), NOW(), #{createdBy}, #{updatedBy})
+    </insert>
+    <update id="update">
+        UPDATE ingredient_category SET name = #{name}, code = #{code}, status = #{status}, sort = #{sort}, updated_at = NOW(), updated_by = #{updatedBy} WHERE id = #{id}
+    </update>
+    <update id="updateStatus">
+        UPDATE ingredient_category SET status = #{status}, updated_at = NOW(), updated_by = #{updatedBy} WHERE id = #{id}
+    </update>
+    <delete id="delete">DELETE FROM ingredient_category WHERE id = #{id}</delete>
+</mapper>

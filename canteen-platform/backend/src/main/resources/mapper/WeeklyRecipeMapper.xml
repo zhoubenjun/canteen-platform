@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.canteen.mapper.WeeklyRecipeMapper">
+    <select id="listByWeek" resultType="com.canteen.entity.WeeklyRecipe">
+        SELECT * FROM weekly_recipe WHERE week_key = #{weekKey} ORDER BY day_index, 
+        FIELD(meal_type,'早餐','中餐','晚餐'), seq
+    </select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO weekly_recipe(week_key, day_index, meal_type, dish_id, dish_name, category,
+        people_count, portions, seq)
+        VALUES(#{weekKey}, #{dayIndex}, #{mealType}, #{dishId}, #{dishName}, #{category},
+        #{peopleCount}, #{portions}, #{seq})
+    </insert>
+    <insert id="insertBatch">
+        INSERT INTO weekly_recipe(week_key, day_index, meal_type, dish_id, dish_name, category,
+        people_count, portions, seq) VALUES
+        <foreach collection="list" item="r" separator=",">
+        (#{r.weekKey}, #{r.dayIndex}, #{r.mealType}, #{r.dishId}, #{r.dishName}, #{r.category},
+        #{r.peopleCount}, #{r.portions}, #{r.seq})
+        </foreach>
+    </insert>
+    <update id="update">
+        UPDATE weekly_recipe SET people_count=#{peopleCount}, portions=#{portions}, seq=#{seq}
+        WHERE id=#{id}
+    </update>
+    <delete id="deleteByWeek">DELETE FROM weekly_recipe WHERE week_key = #{weekKey}</delete>
+    <delete id="delete">DELETE FROM weekly_recipe WHERE id = #{id}</delete>
+    <select id="listWeekKeys" resultType="java.lang.String">
+        SELECT DISTINCT week_key FROM weekly_recipe ORDER BY week_key DESC
+    </select>
+    <select id="listForPurchase" resultType="com.canteen.entity.WeeklyRecipe">
+        SELECT * FROM weekly_recipe
+        WHERE week_key = #{weekKey}
+        <if test="days != null and days.size() > 0">
+            AND day_index IN
+            <foreach collection="days" item="d" open="(" separator="," close=")">#{d}</foreach>
+        </if>
+        ORDER BY day_index, FIELD(meal_type,'早餐','中餐','晚餐'), seq
+    </select>
+</mapper>

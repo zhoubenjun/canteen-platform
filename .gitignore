@@ -1,0 +1,47 @@
+# ==========================================================
+# 仓库根 = D:\canteen-platform
+# 本文件是“仓库根级”忽略规则，优先级高于子目录里的 .gitignore。
+# 注意：已提交进 Git 历史的文件不会被 .gitignore 影响，
+#       要移出历史必须重建仓库或用 git rm --cached + 重写历史。
+# ==========================================================
+
+# ---------- 项目主目录：canteen-platform/ ----------
+/canteen-platform/backend/target/
+/canteen-platform/backend/src/main/resources/static/
+/canteen-platform/backend/uploads/
+/canteen-platform/frontend/node_modules/
+/canteen-platform/frontend/dist/
+/canteen-platform/frontend/build-log.txt
+/canteen-platform/tools/
+/canteen-platform/.idea/
+/canteen-platform/.vscode/
+
+# ---------- 根目录下的残留 backend（只有 src，也不入库）----------
+/backend/
+
+# ---------- 通用：依赖 / 构建产物 / 运行数据 ----------
+**/node_modules/
+**/target/
+**/dist/
+**/uploads/
+
+# ---------- 通用：压缩包、二进制包 ----------
+**/*.jar
+**/*.war
+**/*.zip
+**/*.7z
+**/*.rar
+
+# ---------- 通用：日志与临时文件 ----------
+**/*.log
+**/*.log.*
+**/*.tmp
+**/*.bak
+**/*.old
+**/*.sql.bak
+**/*.sql.gz
+
+# ---------- 操作系统杂项 ----------
+Thumbs.db
+Desktop.ini
+.DS_Store

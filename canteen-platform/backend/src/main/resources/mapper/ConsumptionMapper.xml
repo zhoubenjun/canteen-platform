@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.canteen.mapper.ConsumptionMapper">
+    <resultMap id="consumptionMap" type="com.canteen.entity.Consumption">
+        <id property="id" column="id"/>
+        <result property="registerType" column="register_type"/>
+        <result property="registerName" column="register_name"/>
+        <result property="className" column="class_name"/>
+        <result property="amount" column="amount"/>
+        <result property="payStatus" column="pay_status"/>
+        <result property="consumeDate" column="consume_date"/>
+        <result property="businessType" column="business_type"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="dish" column="dish"/>
+    </resultMap>
+
+    <sql id="whereClause">
+        <where>
+            <if test="name != null and name != ''">
+                AND register_name LIKE CONCAT('%',#{name},'%')
+            </if>
+            <if test="registerType != null and registerType != ''">
+                AND register_type = #{registerType}
+            </if>
+            <if test="businessType != null and businessType != ''">
+                AND business_type = #{businessType}
+            </if>
+            <if test="start != null and start != ''">
+                AND consume_date &gt;= #{start}
+            </if>
+            <if test="end != null and end != ''">
+                AND consume_date &lt;= #{end}
+            </if>
+        </where>
+    </sql>
+
+    <select id="page" resultMap="consumptionMap">
+        SELECT * FROM consumption
+        <include refid="whereClause"/>
+        ORDER BY id
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM consumption
+        <include refid="whereClause"/>
+    </select>
+
+    <select id="listMatchKeys" resultType="string">
+        SELECT CONCAT(register_name, '|', consume_date, '|', business_type)
+        FROM consumption
+        WHERE register_name IS NOT NULL AND register_name &lt;&gt; ''
+          AND consume_date IS NOT NULL AND consume_date &lt;&gt; ''
+          AND business_type IS NOT NULL AND business_type &lt;&gt; ''
+    </select>
+
+    <insert id="batchInsert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO consumption
+            (register_type, register_name, class_name, amount, pay_status,
+             consume_date, business_type, order_no, dish)
+        VALUES
+        <foreach collection="list" item="c" separator=",">
+            (#{c.registerType}, #{c.registerName}, #{c.className}, #{c.amount}, #{c.payStatus},
+             #{c.consumeDate}, #{c.businessType}, #{c.orderNo}, #{c.dish})
+        </foreach>
+    </insert>
+
+    <delete id="deleteAll">DELETE FROM consumption</delete>
+
+    <delete id="deleteByMonth">
+        DELETE FROM consumption WHERE consume_date LIKE CONCAT(#{month}, '-%')
+    </delete>
+</mapper>

@@ -1,0 +1,183 @@
+/* ============ 食堂管理数据平台 - 蓝色系主题 ============ */
+:root {
+  --main: #2f6fd0;        /* 主色 品牌蓝 */
+  --main-dark: #1c4f9c;
+  --warm-bg: #f3f7fd;     /* 页面冷底 */
+  --warm-brown: #2a5490;  /* 深蓝辅色 */
+  --warm-line: #d5e3f6;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: "Microsoft YaHei", "PingFang SC", Helvetica, Arial, sans-serif;
+  background: var(--warm-bg);
+  color: #20344f;
+  min-width: 1366px;
+}
+
+/* Element 主色覆盖为品牌蓝 */
+.el-button--primary { background-color: var(--main); border-color: var(--main); }
+.el-button--primary:hover, .el-button--primary:focus { background-color: var(--main-dark); border-color: var(--main-dark); }
+.el-button--primary.is-plain { color: var(--main); background: #fff; border-color: var(--main); }
+.el-button--primary.is-plain:hover { background: var(--main); color: #fff; }
+.el-tabs__item.is-active { color: var(--main); }
+.el-tabs__active-bar { background-color: var(--main); }
+.el-tabs__item:hover { color: var(--main-dark); }
+.el-input.is-active .el-input__inner, .el-input__inner:focus { border-color: var(--main); }
+.el-select .el-input.is-focus .el-input__inner { border-color: var(--main); }
+.el-pagination.is-background .el-pager li:not(.disabled).active { background-color: var(--main); }
+.el-pagination.is-background .el-pager li:not(.disabled):hover { color: var(--main); }
+.el-radio__input.is-checked .el-radio__inner { border-color: var(--main); background: var(--main); }
+.el-radio__input.is-checked + .el-radio__label { color: var(--main); }
+.el-checkbox__input.is-checked .el-checkbox__inner { background: var(--main); border-color: var(--main); }
+.el-checkbox__input.is-checked + .el-checkbox__label { color: var(--main); }
+.el-table th { background: #e6f0fd !important; color: #1e4f99; }
+.el-dialog__title { color: var(--main-dark); }
+.el-card { border-radius: 8px; }
+.el-switch.is-checked .el-switch__core { background-color: var(--main); border-color: var(--main); }
+
+/* 顶部导航 */
+.top-nav {
+  height: 56px;
+  background: linear-gradient(90deg, #1e56ab, #2f6fd0);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  box-shadow: 0 2px 8px rgba(24, 74, 150, .35);
+  position: sticky; top: 0; z-index: 100;
+}
+.top-nav .brand { font-size: 22px; font-weight: 700; letter-spacing: 1px; margin-right: 40px; white-space: nowrap; color: #fff; display: flex; align-items: center; text-shadow: 0 1px 2px rgba(0,0,0,.25); }
+.top-nav .brand .brand-logo { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; background: #fff; border: 2px solid rgba(255,255,255,.65); box-shadow: 0 1px 4px rgba(0,0,0,.22); margin-right: 10px; flex: none; }
+.top-nav .nav-tab {
+  color: #d8e7fc; padding: 6px 16px; margin-right: 6px; cursor: pointer;
+  border-radius: 18px; font-size: 14px; transition: all .2s; white-space: nowrap;
+}
+.top-nav .nav-tab:hover { background: rgba(255,255,255,.18); color: #fff; }
+.top-nav .nav-tab.active { background: #fff; color: #1e56ab; font-weight: 700; }
+.top-nav .spacer { flex: 1; }
+.top-nav .nav-drop { margin-right: 6px; }
+.top-nav .nav-drop .nav-tab, .top-nav .nav-user .nav-tab { display: inline-block; line-height: normal; }
+
+/* 一级菜单统一字号与行高：下拉触发项与普通标签同规格 */
+.top-nav .nav-tab,
+.top-nav .nav-drop .nav-tab,
+.top-nav .nav-user .nav-tab {
+  font-size: 14px; font-weight: 400; line-height: 24px; letter-spacing: 0;
+  font-family: inherit; vertical-align: middle;
+}
+.top-nav .nav-tab.active { font-weight: 700; }
+
+/* 二级菜单（各模块下拉）统一字号与行高，覆盖 Element small/medium/mini 尺寸变体 */
+.el-dropdown-menu--small .el-dropdown-menu__item,
+.el-dropdown-menu--medium .el-dropdown-menu__item,
+.el-dropdown-menu--mini .el-dropdown-menu__item,
+.el-dropdown-menu__item {
+  font-size: 14px; line-height: 32px; font-family: inherit;
+  white-space: nowrap;
+}
+/* 下拉面板保证最小宽度，避免文字竖排 */
+.el-dropdown-menu { min-width: 150px; }
+.top-nav .nav-user { margin-left: 10px; }
+
+.page { padding: 16px 20px 40px; }
+.page-card { background: #fff; border-radius: 8px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(40,90,160,.10); }
+
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 12px; }
+
+/* 菜品卡片 */
+.dish-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.dish-card {
+  border: 1px solid var(--warm-line); border-radius: 10px; overflow: hidden;
+  background: #fff; transition: box-shadow .2s; cursor: pointer; display: flex; flex-direction: column;
+  position: relative;
+}
+.dish-card:hover { box-shadow: 0 4px 16px rgba(47,111,208,.22); }
+.dish-card .card-del { position: absolute; top: 6px; right: 6px; z-index: 5; opacity: 0; transition: opacity .2s; background: rgba(245,108,108,.9); border-color: rgba(245,108,108,.9); color: #fff; }
+.dish-card:hover .card-del { opacity: 1; }
+.dish-card .card-del:hover { background: #f56c6c; border-color: #f56c6c; }
+.dish-info { padding: 12px 14px 10px; flex: 1; }
+.dish-info .d-name { font-size: 16px; font-weight: 700; color: #1c3f73; }
+.dish-info .d-meta { font-size: 12px; color: #5c789c; margin-top: 6px; line-height: 1.6; }
+.dish-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; background: #edf4fd; }
+
+/* 金额提示箭头 */
+.price-up { color: #e6a23c; font-weight: 700; }
+.price-down { color: #67c23a; font-weight: 700; }
+.price-abnormal { color: #f56c6c; font-weight: 700; }
+
+/* 周食谱表格 */
+.recipe-table .el-table__body tr th { text-align: center; }
+.week-dup { color: #e6a23c; }
+.week-dup-3 { color: #f56c6c; }
+
+/* 公示页面 */
+.pub-page { max-width: 1100px; margin: 0 auto; }
+.pub-title { text-align: center; font-size: 26px; font-weight: 800; color: #1c3f73; margin: 10px 0 4px; }
+.pub-date { text-align: center; color: #5c789c; margin-bottom: 14px; }
+.pub-meals { display: grid; grid-template-columns: 5fr 7fr 5fr; gap: 12px; }
+.pub-col { background: #fff; border: 1px solid var(--warm-line); border-radius: 10px; padding: 12px; }
+.pub-col h3 { text-align: center; background: #e6f0fd; margin: -12px -12px 10px; padding: 8px; border-radius: 10px 10px 0 0; color: #1c3f73; }
+.pub-item { padding: 6px 4px; border-bottom: 1px dashed #dfe9f6; font-size: 14px; }
+.pub-item .pn { font-weight: 700; color: #1e56ab; }
+.pub-ing { font-size: 12px; color: #999; }
+
+/* 大屏 */
+.bigscreen {
+  position: fixed; inset: 0; z-index: 1000;
+  background: linear-gradient(135deg, #0d2c5c 0%, #14498f 45%, #1e5ba8 100%);
+  color: #fff; display: flex; flex-direction: column;
+}
+.big-top { display: flex; align-items: center; padding: 10px 20px; gap: 16px; flex-wrap: wrap; background: rgba(255,255,255,.08); }
+/* 全屏模式：顶部整行默认隐藏（鼠标移到屏幕顶部时才呼出），保证大屏干净 */
+.bigscreen.fs .big-top {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+  opacity: 0; transition: opacity .25s;
+  background: linear-gradient(180deg, rgba(6, 24, 56, .72), rgba(6, 24, 56, 0));
+}
+.bigscreen.fs .big-top:hover { opacity: 1; }
+.big-top .big-name { font-size: 26px; font-weight: 800; display: flex; align-items: center; color: #fff; letter-spacing: 1px; text-shadow: 0 2px 8px rgba(3, 18, 44, .55); }
+.big-top .big-name .big-logo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #fff; border: 2px solid rgba(255,255,255,.75); box-shadow: 0 2px 8px rgba(3,18,44,.4); margin-right: 10px; }
+
+/* 全屏 + 非就餐时段：左上角常显校徽与校名 */
+.fs-brand {
+  position: fixed; top: 36px; left: 42px; z-index: 20;
+  display: flex; align-items: center; gap: 18px;
+  color: #fff; font-size: 38px; font-weight: 800; letter-spacing: 1px;
+  white-space: nowrap;
+  text-shadow: 0 3px 14px rgba(3, 18, 44, .6);
+}
+.fs-brand .fs-brand-logo {
+  width: 66px; height: 66px; border-radius: 50%; object-fit: cover;
+  background: #fff; border: 3px solid rgba(255,255,255,.8);
+  box-shadow: 0 3px 12px rgba(3,18,44,.45);
+}
+.big-grid { flex: 1; display: grid; gap: 16px; padding: 16px 24px; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; overflow-y: auto; }
+.big-grid .big-card { height: 100%; min-height: 0; }
+.big-grid::-webkit-scrollbar { width: 10px; }
+.big-grid::-webkit-scrollbar-track { background: rgba(0,0,0,.12); }
+.big-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,.35); border-radius: 5px; }
+.big-card {
+  background: #123a6b; border-radius: 12px; overflow: hidden; position: relative;
+  display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,.25);
+}
+.big-card .img-wrap { flex: 1; min-height: 0; }
+.big-card img { width: 100%; height: 100%; object-fit: cover; }
+.big-card .big-info { height: 20%; background: #1c3f73; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; }
+.big-card .big-name { font-size: 22px; font-weight: 700; }
+.big-card .big-price { font-size: 30px; font-weight: 800; color: #ffd166; }
+.big-nav { display: flex; justify-content: center; gap: 24px; padding: 12px; align-items: center; }
+.big-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,.4); margin: 0 5px; cursor: pointer; }
+.big-dot.active { background: #ffd166; }
+
+.text-muted { color: #5c789c; font-size: 12px; }
+.mt8 { margin-top: 8px; }
+.mb8 { margin-bottom: 8px; }
+.flex { display: flex; align-items: center; gap: 8px; }
+.w120 { width: 120px; }
+.w160 { width: 160px; }
+.w200 { width: 200px; }
+.cost-formula { margin-top: 8px; padding: 8px 10px; background: #eff6ff; border: 1px dashed #8eb6e6; border-radius: 6px; font-size: 12px; color: #2b5588; line-height: 1.7; }
+.cost-formula .cf-line { word-break: break-all; }
+.cost-formula .cf-calc { color: #1e56ab; font-weight: 600; }

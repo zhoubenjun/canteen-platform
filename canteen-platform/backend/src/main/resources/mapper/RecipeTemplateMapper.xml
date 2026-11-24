@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.canteen.mapper.RecipeTemplateMapper">
+    <select id="listAll" resultType="com.canteen.entity.RecipeTemplate">
+        SELECT * FROM recipe_template
+        <where>
+            <if test="keyword != null and keyword != ''">AND name LIKE CONCAT('%',#{keyword},'%')</if>
+        </where>
+        ORDER BY created_at DESC
+    </select>
+    <select id="findById" resultType="com.canteen.entity.RecipeTemplate">
+        SELECT * FROM recipe_template WHERE id = #{id}
+    </select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO recipe_template(name, data_json, created_at) VALUES(#{name}, #{dataJson}, NOW())
+    </insert>
+    <update id="update">UPDATE recipe_template SET name=#{name} WHERE id=#{id}</update>
+    <delete id="delete">DELETE FROM recipe_template WHERE id=#{id}</delete>
+</mapper>

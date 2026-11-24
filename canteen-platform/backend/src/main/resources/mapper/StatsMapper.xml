@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.canteen.mapper.StatsMapper">
+
+    <!--
+      实际用餐日期：week_key(周一) + day_index
+      食材用量 = 菜品配料单份克重(weight_g) × 该餐出餐份数(portions)
+    -->
+    <select id="ingredientStats" resultType="java.util.Map">
+        SELECT
+            i.id             AS ingredientId,
+            i.name           AS ingredientName,
+            MAX(c.name)      AS categoryName,
+            ROUND(COALESCE(SUM(IFNULL(di.weight_g, 0) * IFNULL(wr.portions, 0)), 0) / 1000.0, 3) AS totalWeightKg,
+            ROUND(i.price, 4) AS unitPrice,
+            ROUND(COALESCE(SUM(IFNULL(di.weight_g, 0) * IFNULL(wr.portions, 0)), 0) / 1000.0 * IFNULL(i.price, 0), 2) AS totalCost,
+            CASE WHEN COUNT(wr.id) > 0 THEN 1 ELSE 0 END AS used
+        FROM ingredient i
+        LEFT JOIN dish_ingredient di ON di.ingredient_id = i.id
+        LEFT JOIN weekly_recipe wr ON wr.dish_id = di.dish_id
+            AND DATE_ADD(STR_TO_DATE(wr.week_key, '%Y-%m-%d'), INTERVAL wr.day_index DAY)
+                BETWEEN STR_TO_DATE(#{startDate}, '%Y-%m-%d') AND STR_TO_DATE(#{endDate}, '%Y-%m-%d')
+        LEFT JOIN ingredient_category c ON i.category_id = c.id
+        GROUP BY i.id, i.name, i.price, c.name
+        ORDER BY totalWeightKg DESC, i.name
+    </select>
+
+    <select id="dishStats" resultType="java.util.Map">
+        SELECT
+            d.id         AS dishId,
+            d.name       AS dishName,
+            d.category   AS category,
+            COUNT(wr.id) AS useCount,
+            COALESCE(SUM(IFNULL(wr.portions, 0)), 0) AS totalPortions,
+            CASE WHEN COUNT(wr.id) > 0 THEN 1 ELSE 0 END AS used
+        FROM dish d
+        LEFT JOIN weekly_recipe wr ON wr.dish_id = d.id
+            AND DATE_ADD(STR_TO_DATE(wr.week_key, '%Y-%m-%d'), INTERVAL wr.day_index DAY)
+                BETWEEN STR_TO_DATE(#{startDate}, '%Y-%m-%d') AND STR_TO_DATE(#{endDate}, '%Y-%m-%d')
+        GROUP BY d.id, d.name, d.category
+        ORDER BY useCount DESC, d.name
+    </select>
+
+</mapper>
