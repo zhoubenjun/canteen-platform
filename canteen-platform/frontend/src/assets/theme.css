@@ -40,6 +40,10 @@ body {
 /* 顶部导航 */
 .top-nav {
   height: 56px;
+  /* 背景铺满整行：菜单内容比 1366 宽（放大/窄屏时更明显）时，
+     导航条宽度跟随内容伸展并至少占满整行，避免右侧蓝色缺失 */
+  width: max-content;
+  min-width: 100%;
   background: linear-gradient(90deg, #1e56ab, #2f6fd0);
   color: #fff;
   display: flex;
